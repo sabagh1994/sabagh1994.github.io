@@ -1,0 +1,127 @@
+html { scroll-behavior: smooth; }
+header { margin: 0; padding: 0;}
+section { padding: 75px 0; }
+.jumbotron { margin-bottom: 0;}
+
+/* NAVBAR */
+
+#navbar-toggler-cbox:checked ~ .collapse { display:block; }
+.navbar-nav .active { color: #fff; }
+
+.navbar-brand a { color: ghostwhite; }
+.navbar-brand a:hover {
+  color: rgba(255,255,255,.5);
+  text-decoration: none;
+}
+
+a.nav-link.active { color: #fff !important; }
+
+/* FORMATTING */
+
+section h2 { margin-bottom: 1em;}
+
+.lead {
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 50px;
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+}
+
+.franklin-content ul li p { margin: 0; }
+
+.katex { font-size: 1em !important;}
+
+a.anchor {
+    display: block;
+    position: relative;
+    top: -150px;
+    visibility: hidden;
+}
+
+/* CODE */
+
+pre { margin-bottom: 0.5em; }
+pre code.hljs {
+	padding-left: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+pre code.hljs.plaintext {
+	margin-bottom: 1em;
+}
+
+/* ADD ANY SPECIFIC TWEAKS YOU MIGHT WANT HERE */
+
+.iclr_spotlight {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 14px;
+  margin-bottom: 2em;
+  margin-top: -15px;
+}
+
+.firth_authors_list_single {
+	margin-bottom: 5px;
+	line-height: 45px
+}
+
+.firth_authors {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 20px;
+	font-weight: 400;
+  line-height: 45px;
+  /* for color see style_tuning.fcss and config.md */
+	text-decoration: underline
+}
+
+.firth_authors:hover {
+  /* for color see style_tuning.fcss and config.md */
+}
+
+.firth_affiliation {
+	display: inline;
+	margin-bottom: -1px;
+	font-family: Ubuntu, Helvetica, sans-serif;
+	font-size: 14px;
+	line-height: 20px;
+	font-weight: 400;
+	letter-spacing: 0
+}
+
+.firth_equal {
+  font-family: Arial,'Helvetica Neue',Helvetica,sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  color: #ffffff;
+  font-weight: 400;
+  box-sizing: border-box;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-top: 0;
+}
+
+
+.firth_icons {
+  -webkit-text-size-adjust: 100%;
+  font-family: Arial,'Helvetica Neue',Helvetica,sans-serif;
+  font-size: 12px;
+  max-height: 80px;
+  box-sizing: border-box;
+  background-color: transparent;
+  display: block;
+  max-width: 100%;
+  margin-right: auto;
+  margin-bottom: 14px;
+  margin-left: auto;
+  text-align: center;
+}
+
+.firth_icon_description {
+  font-family: Arial,'Helvetica Neue',Helvetica,sans-serif;
+  font-size: 16px;
+  margin-top: -10px;
+  font-weight: 800;
+  letter-spacing: 0
+}

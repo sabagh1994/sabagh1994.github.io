@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- META -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Ehsan Saleh, Saba Ghaffari, David Forsyth, and Yu-Xiong Wang">
+  <title>Firth Bias Reduction in Few-Shot Learning</title>
+
+  <link rel="icon" type="image/png"  href="/firthfsl/assets/firthfsllogo_wl.ico">
+
+  <!-- CSS -->
+   <link rel="stylesheet" href="/firthfsl/libs/katex/katex.min.css">
+     
+   <link rel="stylesheet" href="/firthfsl/libs/highlight/styles/atom-one-dark-reasonable.css">
+   
+  <link rel="stylesheet" href="/firthfsl/css/bootstrap.min.css">
+  <style>.bg-primary {
+  background-color: #10797d !important;
+}
+
+a {
+  color: #2669DD;
+}
+
+a:hover {
+  color: teal;
+}
+
+.section-bg-color {
+  background-color: #ebf2f2;
+}
+
+section { background-color: #f6f8fa; }
+
+footer a {
+  color: cornflowerblue;
+}
+
+
+header {
+  margin-top: 55px !important;
+}
+
+
+
+
+/* CODE ADJUSTMENTS */
+
+pre code.hljs {
+  border-radius: 10px;
+}
+
+pre code.hljs.plaintext {
+  margin-left: 15px;
+}
+
+/* ADD ANY SPECIFIC TWEAKS YOU MIGHT WANT HERE */
+.firth_authors {
+  color: #ffffff;
+}
+
+.firth_authors:hover {
+  color: #ffffff;
+}
+</style>
+  <link rel="stylesheet" href="/firthfsl/css/custom.css">
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y0YHSPYVZZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-Y0YHSPYVZZ');
+  </script>
+</head>
+<body id="page-top">
+  
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+    <div class="container">
+      <span class="navbar-brand">
+        
+          <img src="/firthfsl/assets/firthfsllogo_wl.svg" class="img-fluid" style="height:         25px;
+padding-right:  10px;
+" alt="Logo"/>
+        
+        <a href="#page-top">Firth Bias Reduction in Few-Shot Learning</a>
+        
+      </span>
+      <input type="checkbox" id="navbar-toggler-cbox" class="d-none" />
+      <label for="navbar-toggler-cbox" class="navbar-toggler" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </label>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          
+          <li class="nav-item">
+            <a class="nav-link" href="#premise">Premise</a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="#theory">Theory</a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="#results">Results</a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="#implementation">Implementation</a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="#code">Code</a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="#data">Data</a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="#references">References</a>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <header class="text-white text-center">
+  
+    <div class="jumbotron jumbotron-fluid container-fluid bg-primary">
+  
+    <h1>Firth Bias Reduction in Few-Shot Learning</h1>
+    <div class="lead">On the Importance of Firth Bias Reduction in
+Few-Shot Classification
+</div>
+    <div class="iclr_spotlight">ICLR 2022 Spotlight</div>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-2"><a href="https://ehsansaleh.github.io/" target="_blank" class="firth_authors">Ehsan Saleh*</a></div>
+        <div class="col-2"><a href="https://sabagh1994.github.io/" target="_blank" class="firth_authors">Saba Ghaffari*</a></div>
+        <div class="col-2"><a href="http://luthuli.cs.uiuc.edu/~daf/" target="_blank" class="firth_authors">David A. Forsyth</a></div>
+        <div class="col-2"><a href="https://yxw.web.illinois.edu" target="_blank" class="firth_authors">Yu-Xiong Wang</a></div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-4 firth_affiliation">Thomas M. Siebel Center for Computer Science</div>
+        <div class="col-4 firth_affiliation">National Center for Super-computing Applications</div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-4 firth_affiliation">University of Illinois Urbana-Champaign</div>
+        <div class="col-4 firth_affiliation">University of Illinois Urbana-Champaign</div>
+      </div>
+
+      <div class="row">
+        <div class="col firth_equal">* Denotes Equal Contribution</div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-1"> <a href="https://arxiv.org/abs/2110.02529" target="_blank"> <img src="/firthfsl/assets/paper_icon.png" class="firth_icons"> </a> </div>
+      <div class="col-1"> <a href="https://github.com/ehsansaleh/firth_bias_reduction" target="_blank"> <img src="/firthfsl/assets/github_icon3.png" class="firth_icons"> </a> </div>
+      <div class="col-1"> <a href=https://databank.illinois.edu/datasets/IDB-1016367?code=UfxmYNvnxRZQmPzXNiM4--tCfFeEHm-msxZWihwKmHs target="_blank"> <img src="/firthfsl/assets/data_icon2.png" class="firth_icons"> </a> </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-1 firth_icon_description">Paper</div>
+      <div class="col-1 firth_icon_description"> <\Code> </div>
+      <div class="col-1 firth_icon_description">Data</div>
+    </div>
+
+
+
+
+
+    
+    
+  </div>
+</header>
+
+  <!-- Content appended here -->
+<div class="franklin-content"><section id="premise" class="scrollspy">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2>The Premise</h2></p>
+<p>Every time you train a logistic classifier in a few-shot task and minimize a cross-entropy loss, you&#39;re essentially performing a <strong>Maximum Likelihood Estimation &#40;MLE&#41;</strong>.</p>
+<p>In the world of statistics, MLEs are known to suffer from serious bias issues when only few samples are provided.</p>
+<p>The few shots you use are random samples, so the MLEs are going to be random variables too. There is no easy way around this stochasticity and you would always get some randomness or variance in the resulting MLE.</p>
+<p>That being said, it&#39;s only reasonable to hope that you&#39;d get the right parameters with MLE, at least on average. Well, that&#39;s the issue&#33; Not only MLEs can have a lot of variance, but also they can be severely off even on-average&#33;</p>
+ <div style="text-align:center;"> <figure class="figure">
+  <img src="/firthfsl/assets/static_figures/mlebiasslide.svg" alt="A conceptual visualization of the classifier parameter estimation's bias problem in few-shot learning." class="figure-img img-fluid " width="100%" style="border-radius:5px;">
+  <figcaption class="figure-caption ">
+A conceptual visualization of the classifier parameter estimation's bias problem in few-shot learning.
+</figcaption>
+
+</figure>
+  </div>
+<p><strong><em>Care for a simple example to see the severity of this issue?</em></strong></p>
+<p>Here is a simple toy-example show-casing this issue in a <a href="https://en.wikipedia.org/wiki/Geometric_distribution">few-shot geometric experiment with a fair coin</a> &#40;yes; the same exact problem from your introductory probability course&#41;.</p>
+<p>You want to recover the coin head probability with a few number of samples, so you use the MLE. However, you&#39;re curious if you&#39;d even get the right parameter on average. To check that, you simulate some experiments in python and plot the average MLE. Here&#39;s what you&#39;ll see:</p>
+ <div style="text-align:center;">  <div class="container"><div class="row"> <div class="col "> <em>The Average MLE in a Geometric Experiment</em></p>
+ <img src="/firthfsl/assets/static_figures/avgmle_vs_nsamples_geom.svg" alt="drawing" width="100%"/>
+<p>The <span style="color:blue;">blue</span> points show the average MLE for various sample sizes. The <strong>black</strong> double-sided vertical arrow shows the MLE bias away from the true parameter. The <span style="color:red;">red</span> points show a slightly better estimator than MLE. </div> <div class="col "> <em>The MLE Bias vs. the Sample Size in a log-log Scale</em></p>
+ <img src="/firthfsl/assets/static_figures/logmlebias_vs_lognsamples_geom.svg" alt="drawing" width="100%"/>
+<p>The vertical axis shows the log-10 of the MLE bias, and the horizontal axis shows the log-10 of the number of samples. The bias isn&#39;t going away as fast as you would hope so; it&#39;s of <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><msup><mi>N</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(N^{-1})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">N</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> and far from an exponential drop for sure. </div></p>
+<p> </div></div>  </div>
+<p>This begs the central question in our paper:</p>
+ <div style="text-align:center;"> <strong>If MLEs cannot recover the true parameter even on average in such an easy problem, then how can we trust they&#39;re best for few-shot logistic classifiers with thousands of dimensions?</strong>  </div>
+<p> <div style="text-align:center;"> </div> This motivates the introduction of the Firth MLE penalty, a glimpse of which was shown in the geometric example plot in red.</p>
+<p>      </div>
+    </div>
+  </div>
+</section>
+<section id="theory" class="scrollspy section-bg-color">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2>Firth Bias Reduction in Few Words</h2> <strong>For 1-Layer Logistic and Cosine Classifiers with the Cross-Entropy Loss</strong>:</p>
+<p>All you need to do, is replace</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>β</mi><mo>^</mo></mover><mo>=</mo><msub><mtext>argmin</mtext><mi>β</mi></msub><mspace width="1em"/><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><mo fence="false">[</mo><mtext>CE</mtext><mo stretchy="false">(</mo><msub><mi mathvariant="bold">P</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi mathvariant="bold">y</mi><mi>i</mi></msub><mo stretchy="false">)</mo><mo fence="false">]</mo></mrow><annotation encoding="application/x-tex">\hat{\beta} = \text{argmin}_{\beta} \quad \frac{1}{N}\sum_{i=1}^{N} \bigg[\text{CE}(\mathbf{P}_i, \mathbf{y}_i)\bigg]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1523199999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9578799999999998em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05278em;">β</span></span></span><span style="top:-3.26344em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">^</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:3.106005em;vertical-align:-1.277669em;"></span><span class="mord"><span class="mord text"><span class="mord">argmin</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2419679999999999em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05278em;">β</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.380248em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:1em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">N</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8283360000000002em;"><span style="top:-1.872331em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3000050000000005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.277669em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="delimsizing size3">[</span></span><span class="mord text"><span class="mord">CE</span></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathbf">P</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord"><span class="mord mathbf" style="margin-right:0.01597em;">y</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord"><span class="delimsizing size3">]</span></span></span></span></span></span>
+<p>with</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover accent="true"><mi>β</mi><mo>^</mo></mover><mtext>Firth</mtext></msub><mo>=</mo><msub><mtext>argmin</mtext><mi>β</mi></msub><mspace width="1em"/><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><mo fence="false">[</mo><mtext>CE</mtext><mo stretchy="false">(</mo><msub><mi mathvariant="bold">P</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi mathvariant="bold">y</mi><mi>i</mi></msub><mo stretchy="false">)</mo><mo>+</mo><mi>λ</mi><mo>⋅</mo><mtext>CE</mtext><mo stretchy="false">(</mo><msub><mi mathvariant="bold">P</mi><mi>i</mi></msub><mo separator="true">,</mo><mi mathvariant="bold">U</mi><mo stretchy="false">)</mo><mo fence="false">]</mo></mrow><annotation encoding="application/x-tex">\hat{\beta}_{\text{Firth}} = \text{argmin}_{\beta} \quad \frac{1}{N}\sum_{i=1}^{N} \bigg[\text{CE}(\mathbf{P}_i, \mathbf{y}_i) + \lambda \cdot \text{CE}(\mathbf{P}_i,\mathbf{U}) \bigg]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1523199999999998em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9578799999999998em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05278em;">β</span></span></span><span style="top:-3.26344em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">^</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">Firth</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:3.106005em;vertical-align:-1.277669em;"></span><span class="mord"><span class="mord text"><span class="mord">argmin</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2419679999999999em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05278em;">β</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.380248em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:1em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.32144em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">N</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8283360000000002em;"><span style="top:-1.872331em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3000050000000005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.277669em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="delimsizing size3">[</span></span><span class="mord text"><span class="mord">CE</span></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathbf">P</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord"><span class="mord mathbf" style="margin-right:0.01597em;">y</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">λ</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.40003em;vertical-align:-0.95003em;"></span><span class="mord text"><span class="mord">CE</span></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathbf">P</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathbf">U</span></span><span class="mclose">)</span><span class="mord"><span class="delimsizing size3">]</span></span></span></span></span></span>
+<p>where <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold">U</mi></mrow><annotation encoding="application/x-tex">\mathbf{U}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68611em;vertical-align:0em;"></span><span class="mord"><span class="mord mathbf">U</span></span></span></span></span> is the uniform distribution over the classes, and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi></mrow><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">λ</span></span></span></span> is a positive constant. The CE-term with the uniform distribution is basically the &#40;negative&#41; sum of the prediction log-probability values over all data points and classes.</p>
+<p><a href="https://arxiv.org/abs/2110.02529">Our paper</a> provides a theoretical proof of why the added penalty is a simplification of a <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>log</mi><mo>⁡</mo><mo stretchy="false">(</mo><mi>det</mi><mo>⁡</mo><mo stretchy="false">(</mo><mi>F</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\log(\det(F))</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mopen">(</span><span class="mop">det</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="mclose">)</span><span class="mclose">)</span></span></span></span> term &#40;thereby, encouraging &quot;larger&quot; Fisher information&#41;.</p>
+<p><strong>General Firth Bias Reduction Form</strong>:</p>
+<p>Add a log-det of FIM term to your loss minimization problem. That is, replace</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>β</mi><mo>^</mo></mover><mo>=</mo><msub><mtext>argmin</mtext><mi>β</mi></msub><mspace width="1em"/><mo fence="false">[</mo><mi>l</mi><mo stretchy="false">(</mo><mi>β</mi><mo stretchy="false">)</mo><mo fence="false">]</mo></mrow><annotation encoding="application/x-tex">\hat{\beta}=\text{argmin}_{\beta}\quad\bigg[l(\beta)\bigg]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1523199999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9578799999999998em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05278em;">β</span></span></span><span style="top:-3.26344em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">^</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.40003em;vertical-align:-0.95003em;"></span><span class="mord"><span class="mord text"><span class="mord">argmin</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2419679999999999em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05278em;">β</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.380248em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:1em;"></span><span class="mord"><span class="delimsizing size3">[</span></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span><span class="mclose">)</span><span class="mord"><span class="delimsizing size3">]</span></span></span></span></span></span>
+<p>with</p>
+<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover accent="true"><mi>β</mi><mo>^</mo></mover><mtext>Firth</mtext></msub><mo>=</mo><msub><mtext>argmin</mtext><mi>β</mi></msub><mspace width="1em"/><mo fence="false">[</mo><mi>l</mi><mo stretchy="false">(</mo><mi>β</mi><mo stretchy="false">)</mo><mo>+</mo><mi>λ</mi><mo>⋅</mo><mi>log</mi><mo>⁡</mo><mo stretchy="false">(</mo><mi>det</mi><mo>⁡</mo><mo stretchy="false">(</mo><mi>F</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo fence="false">]</mo></mrow><annotation encoding="application/x-tex">\hat{\beta}_{\text{Firth}} = \text{argmin}_{\beta} \quad \bigg[l(\beta) + \lambda\cdot \log(\det(F))\bigg]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1523199999999998em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9578799999999998em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05278em;">β</span></span></span><span style="top:-3.26344em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">^</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord text mtight"><span class="mord mtight">Firth</span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:2.40003em;vertical-align:-0.95003em;"></span><span class="mord"><span class="mord text"><span class="mord">argmin</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2419679999999999em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05278em;">β</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.380248em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:1em;"></span><span class="mord"><span class="delimsizing size3">[</span></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">λ</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.40003em;vertical-align:-0.95003em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mopen">(</span><span class="mop">det</span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="mclose">)</span><span class="mclose">)</span><span class="mord"><span class="delimsizing size3">]</span></span></span></span></span></span>
+<p>This was proven to reduce the bias of your estimated parameters in <a href="https://www.jstor.org/stable/pdf/2336755.pdf?casa_token&#61;PlU8RYXqYMcAAAAA:Zawbrw_XhF36J9M9Ht1oD4AAScYxGIgh5APJq6XFWV_BhIOFxlYVBIY4pKipBvGaJNhFRXNcXbWB2JxmjYMwpxISq0os40RfvXA5Cbrso20VMu9XlrI">Firth&#39;s original work</a></p>
+<p>      </div>
+    </div>
+  </div>
+</section>
+<section id="results" class="scrollspy">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2>Experiments and Results</h2> <strong>Logistic Classifiers and Basic Feature Backbones</strong></p>
+<p>The following is the effect of Firth bias reduction compared to typical L2 regularization in 16-way few-shot classification tasks using basic feature backbones and 1-layer logistic classifiers. The vertical axis shows the accuracy improvements, and the horizontal axis shows the number of shots.</p>
+ <div style="text-align:center;">  <div class="container"><div class="row"> <div class="col ">  <img src="/firthfsl/assets/static_figures/dacc_vs_nshots_firth_1layer_mini.svg" alt="drawing" width="100%" background="#f6f8fa"/> </div> <div class="col ">  <img src="/firthfsl/assets/static_figures/dacc_vs_nshots_l2_1layer_mini.svg" alt="drawing" width="100%"/> </div>  </div></div>  </div>
+<p> <div style="text-align:center;"> </div> Here&#39;s the same set of results, but with 3-layer logistic classifiers &#40;instead of 1-layer networks&#41;.</p>
+ <div style="text-align:center;">  <div class="container"><div class="row"> <div class="col ">  <img src="/firthfsl/assets/static_figures/dacc_vs_nshots_firth_3layer_mini.svg" alt="drawing" width="100%"/> </div> <div class="col ">  <img src="/firthfsl/assets/static_figures/dacc_vs_nshots_l2_3layer_mini.svg" alt="drawing" width="100%"/> </div>  </div></div>  </div>
+<p> <div style="text-align:center;"> </div> <strong>Cosine Classifiers and S2M2R Feature Backbones</strong></p>
+<p>Below is the effect of Firth bias reduction on cosine classifiers and S2M2R features. The horizontal axis is the number of classes, and the vertical axis shows the Firth accuracy improvements.</p>
+ <div style="text-align:center;">  <div class="container"><div class="row"> <div class="col ">  <img src="/firthfsl/assets/static_figures/dacc_vs_nways_miniImagenet.svg" alt="drawing" width="100%"/> </div> <div class="col ">  <img src="/firthfsl/assets/static_figures/dacc_vs_nways_cifar.svg" alt="drawing" width="100%"/> </div>  </div></div>  </div>
+ <div style="text-align:center;">  <div class="container"><div class="row"> <div class="col "> </div>  <img src="/firthfsl/assets/static_figures/dacc_vs_nways_tieredImagenet.svg" alt="drawing" width="100%"/>  </div></div>  </div>
+<p> <div style="text-align:center;"> </div> <strong>Firth Bias Reduction on the Distribution Calibration Method</strong></p>
+<p>The following shows the recent state of the art method of few-shot <a href="https://arxiv.org/abs/2101.06395">Distribution Calibration &#40;DC&#41;</a> in cross-domain settings with and without Firth bias reduction. Each setting was tested with and without data augmentation &#40;addition of 750 samples&#41;, and the maximum accuracy was reported. Note that the confidence intervals are much smaller for the improvement column, thanks to the random-effect matching procedure we used in this study.  <div style="text-align:center;"> <table class="table table-striped"> <thead><tr><th align="center"></th><th align="center"></th><th align="center"></th><th align="center">mini → CUB</th><th align="center"></th><th align="center"></th><th align="center">tiered → CUB</th><th align="center"></th></tr></thead><tbody><tr><td align="center"><strong>Way</strong></td><td align="center"><strong>Shot</strong></td><td align="center"><strong>Before</strong></td><td align="center"><strong>After</strong></td><td align="center"><strong>Improvement</strong></td><td align="center"><strong>Before</strong></td><td align="center"><strong>After</strong></td><td align="center"><strong>Improvement</strong></td></tr><tr><td align="center">10</td><td align="center">1</td><td align="center">37.14 ± 0.12</td><td align="center">37.41 ± 0.12</td><td align="center">0.27 ± 0.03</td><td align="center">64.36 ± 0.16</td><td align="center">64.52 ± 0.16</td><td align="center">0.15 ± 0.03</td></tr><tr><td align="center">10</td><td align="center">5</td><td align="center">59.77 ± 0.12</td><td align="center">60.77 ± 0.12</td><td align="center">1.00 ± 0.04</td><td align="center">86.23 ± 0.10</td><td align="center">86.66 ± 0.09</td><td align="center">0.43 ± 0.03</td></tr><tr><td align="center">15</td><td align="center">1</td><td align="center">30.22 ± 0.09</td><td align="center">30.37 ± 0.09</td><td align="center">0.15 ± 0.03</td><td align="center">57.73 ± 0.13</td><td align="center">57.73 ± 0.13</td><td align="center">0.00 ± 0.00</td></tr><tr><td align="center">15</td><td align="center">5</td><td align="center">52.73 ± 0.09</td><td align="center">53.84 ± 0.09</td><td align="center">1.11 ± 0.03</td><td align="center">82.16 ± 0.09</td><td align="center">83.05 ± 0.08</td><td align="center">0.89 ± 0.03</td></tr></tbody></table>  </div></p>
+<p>      </div>
+    </div>
+  </div>
+</section>
+<section id="implementation" class="scrollspy section-bg-color">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2>Implementation</h2></p>
+<p>Implementing Firth bias reduction for 1-layer logistic and cosine classifiers only takes one or two extra lines of code.</p>
+<pre><code class="python hljs">ce_loss = nn.CrossEntropyLoss()
+ce_term = ce_loss(logits, target)
+
+<span class="hljs-comment"># This is how you can compute the Firth bias reduction from classifier logits</span>
+log_probs = logits - torch.logsumexp(logits, dim=-<span class="hljs-number">1</span>, keepdim=<span class="hljs-literal">True</span>)
+firth_term = -log_probs.mean()
+
+loss = ce_term + lam * firth_term
+loss.backward()</code></pre>
+<p>Alternatively, you can use the <code>label_smoothing</code> keyword argument in <a href="https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html"><code>nn.CrossEntropyLoss</code></a>. Remember that this Firth formulation is only true for 1-layer logistic and cosine classifiers. For more complex networks, the FIM&#39;s log-determinant must be worked out.</p>
+<p>As for the <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi></mrow><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">λ</span></span></span></span> coefficient,</p>
+<ul>
+<li><p>Firth&#39;s original work set it to a pre-determined constant.</p>
+</li>
+<li><p>Recently, <a href="https://onlinelibrary.wiley.com/doi/10.1002/sim.6537"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>log</mi><mo>⁡</mo><mi>F</mi><mo stretchy="false">(</mo><mi>m</mi><mo separator="true">,</mo><mi>m</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\log F(m,m)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="mopen">(</span><span class="mord mathdefault">m</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">m</span><span class="mclose">)</span></span></span></span> models</a> proposed scaling Firth&#39;s pre-determined coefficient, making <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi></mrow><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">λ</span></span></span></span> a hyper-parameter.</p>
+</li>
+<li><p>We followed the common machine learning practice, and validated the <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi></mrow><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">λ</span></span></span></span> coefficient on the validation split, then evaluated the validated <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi></mrow><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">λ</span></span></span></span> on the novel set.</p>
+</li>
+<li><p>You don&#39;t need much resolution for the validation search; we performed the <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi></mrow><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">λ</span></span></span></span> search in a log-10 space on a handful of candidates &#40;<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>∈</mo><mo stretchy="false">{</mo><mn>0.0</mn><mo separator="true">,</mo><mn>0.01</mn><mo separator="true">,</mo><mn>0.03</mn><mo separator="true">,</mo><mn>0.1</mn><mo separator="true">,</mo><mn>0.3</mn><mo separator="true">,</mo><mn>1.0</mn><mo separator="true">,</mo><mn>3.0</mn><mo separator="true">,</mo><mn>10.0</mn><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">\lambda\in \{0.0, 0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.73354em;vertical-align:-0.0391em;"></span><span class="mord mathdefault">λ</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">{</span><span class="mord">0</span><span class="mord">.</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">0</span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">0</span><span class="mord">3</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">3</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord">.</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">3</span><span class="mord">.</span><span class="mord">0</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">1</span><span class="mord">0</span><span class="mord">.</span><span class="mord">0</span><span class="mclose">}</span></span></span></span>&#41;.</p>
+</li>
+</ul>
+<p>      </div>
+    </div>
+  </div>
+</section>
+<section id="code" class="scrollspy">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2>Code</h2></p>
+<p>Our implementation is open-source and available at <a href="https://github.com/ehsansaleh/firth_bias_reduction">https://github.com/ehsansaleh/firth&#95;bias&#95;reduction</a>.</p>
+<p>Due to the volume of experimental settings in our paper, we broke down the code into three sub-modules:</p>
+<ul>
+<li><p>The <a href="https://github.com/ehsansaleh/code_firth"><code>code_firth</code></a> repository corresponds to the Firth bias reduction experiments using standard ResNet architectures and logistic classifiers &#40;e.g., Figure 2 and 3 in the main paper&#41;.</p>
+</li>
+<li><p>The <a href="https://github.com/ehsansaleh/code_s2m2rf"><code>code_s2m2rf</code></a> repository corresponds to the experiments with cosine classifiers on WideResNet-28 feature stacks trained by the S2M2R method.</p>
+</li>
+<li><p>The <a href="https://github.com/sabagh1994/code_dcf"><code>code_dcf</code></a> repository contains our GPU implementation of the <a href="https://github.com/ShuoYang-1998/Few_Shot_Distribution_Calibration">Distribution Calibration &#40;DC&#41;</a> method and the relevant Firth bias reduction improvements.</p>
+</li>
+</ul>
+<p>All of them are standalone repositories with</p>
+<ul>
+<li><p>detailed documentation in their corresponding readme files, and</p>
+</li>
+<li><p>helper scripts for automatically downloading and extracting the features, datasets, and backbone parameters from the external sources &#40;such as Google Drive&#41;.</p>
+</li>
+</ul>
+<p>You can clone all three modules with the following command:</p>
+<pre><code class="bash hljs">git <span class="hljs-built_in">clone</span> --recursive https://github.com/ehsansaleh/firth_bias_reduction.git</code></pre>
+<p>      </div>
+    </div>
+  </div>
+</section>
+<section id="data" class="scrollspy section-bg-color">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2>Data</h2></p>
+<p>We have published all the data, pre-computed features, trained backbone parameters, and other auxiliary files &#40;complimenting the open-source code&#41; in two redundant external sources; the Illinois Data Bank and Google-Drive.</p>
+<div class="alert alert-info" role="alert">
+Our <a href="https://github.com/ehsansaleh/firth_bias_reduction">open-source code repositories</a> include <strong>automated downloading shell scripts</strong> in each module that are programmed to pull the data from the external sources and extract and verify their integrity. Ideally, those scripts should automatically download and populate the workspace for you to reproduce our results without any manual intervention. The following details are only referenced for fail-safe redundancy and citation purposes.</div>
+<p><strong>Illinois Data Bank</strong></p>
+<p>We have included our pre-computed features and and trained backbones in tar-ball archives in our Illinois Data Bank Repository at <a href="https://databank.illinois.edu/datasets/IDB-1016367?code=UfxmYNvnxRZQmPzXNiM4--tCfFeEHm-msxZWihwKmHs">https://databank.illinois.edu/datasets/IDB-1016367?code=UfxmYNvnxRZQmPzXNiM4--tCfFeEHm-msxZWihwKmHs</a> with brief instructions for manually downloading and placing the data.</p>
+<p><strong>Google Drive</strong></p>
+ <div class="container"><div class="row"> <div class="col ">  <div style="text-align:center;">The <a href="https://github.com/ehsansaleh/code_firth"><code>code_firth</code></a> module </div> <table class="table table-striped"> <thead><tr><th align="left">Directory</th><th align="left">Links</th></tr></thead><tbody><tr><td align="left"><a href="https://github.com/ehsansaleh/code_firth/tree/main/features"><code>features</code></a></td><td align="left"><a href="https://drive.google.com/drive/folders/1mKUg4ifex8BDU76bnL-4b4gMwoFKHBC4?usp=sharing">URL1</a> and <a href="https://drive.google.com/drive/folders/11pbf2kSJ6XYjKxmY-plITicS99_yvD_g?usp=sharing">URL2</a></td></tr><tr><td align="left"><a href="https://github.com/ehsansaleh/code_firth/tree/main/backbones"><code>backbones</code></a></td><td align="left"><a href="https://drive.google.com/drive/folders/1nw7YKg7O0BEI9Qm3KeSyKqSxh0BslrWe?usp=sharing">URL</a></td></tr><tr><td align="left"><a href="https://github.com/ehsansaleh/code_firth/tree/main/datasets"><code>datasets</code></a></td><td align="left"><a href="https://drive.google.com/drive/folders/1IyMLo10ngferRtRC6GWaw3wwjTInWbia?usp=sharing">URL1</a> and <a href="https://drive.google.com/drive/folders/1wC175y0pGitRjNbbrABw_cz5IxNP4B01?usp=sharing">URL2</a></td></tr></tbody></table> </div> <div class="col ">  <div style="text-align:center;">The <a href="https://github.com/ehsansaleh/code_s2m2rf"><code>code_s2m2rf</code></a> module </div> <table class="table table-striped"> <thead><tr><th align="left">Directory</th><th align="left">Links</th></tr></thead><tbody><tr><td align="left"><a href="https://github.com/ehsansaleh/code_s2m2rf/tree/main/features"><code>features</code></a></td><td align="left"><a href="https://drive.google.com/file/d/1Z-oO1hvcZkwsCZo9n7R3UGwHvFLi6Arf/view?usp=sharing">URL</a></td></tr><tr><td align="left"><a href="https://github.com/ehsansaleh/code_s2m2rf/tree/main/filelists"><code>filelists</code></a></td><td align="left"><a href="https://drive.google.com/file/d/1AnakHzG3tf-ijT8udNDaqx_nbJRKflw6/view?usp=sharing">URL</a></td></tr><tr><td align="left"><a href="https://github.com/ehsansaleh/code_s2m2rf/tree/main/checkpoints"><code>checkpoints</code></a></td><td align="left"><a href="https://drive.google.com/drive/folders/1S-t56H8YWzMn3sjemBcwMtGuuUxZnvb_?usp=sharing">URL</a></td></tr><tr><td align="left"><a href="https://github.com/ehsansaleh/code_s2m2rf/tree/main/Datasets"><code>Datasets</code></a></td><td align="left"><a href="https://drive.google.com/drive/folders/1hJZ8akZ7krtka4x31YVOCkFn9s3VHq-I?usp=sharing">URL</a></td></tr></tbody></table> </div> <div class="col ">  <div style="text-align:center;">The <a href="https://github.com/sabagh1994/code_dcf"><code>code_dcf</code></a> module </div> <table class="table table-striped"> <thead><tr><th align="left">Directory</th><th align="left">Links</th></tr></thead><tbody><tr><td align="left"><a href="https://github.com/sabagh1994/code_dcf/tree/main/features"><code>features</code></a></td><td align="left"><a href="https://drive.google.com/file/d/1nf_WeD7fcEAu2BLD-FLfKRaAtcoseSoO/view?usp=sharing">URL</a></td></tr><tr><td align="left"><a href="https://github.com/sabagh1994/code_dcf/tree/main/cache"><code>cache</code></a></td><td align="left"><a href="https://drive.google.com/file/d/1w9_YOLgIVhtN8YwdiyAkdLLeIVB5UVuU/view?usp=sharing">URL</a></td></tr><tr><td align="left"><a href="https://github.com/sabagh1994/code_dcf/tree/main/filelists"><code>filelists</code></a></td><td align="left"><a href="https://drive.google.com/file/d/1AnakHzG3tf-ijT8udNDaqx_nbJRKflw6/view?usp=sharing">URL</a></td></tr><tr><td align="left"><a href="https://github.com/sabagh1994/code_dcf/tree/main/checkpoints"><code>checkpoints</code></a></td><td align="left"><a href="https://github.com/sabagh1994/code_dcf/tree/main/checkpoints">URL</a></td></tr><tr><td align="left"><a href="https://github.com/sabagh1994/code_dcf/tree/main/Datasets"><code>Datasets</code></a></td><td align="left"><a href="https://github.com/sabagh1994/code_dcf/tree/main/Datasets">URL</a></td></tr></tbody></table> </div>  </div></div>
+<p>      </div>
+    </div>
+  </div>
+</section>
+<section id="references" class="scrollspy">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-10 mx-auto">
+        <h2>References</h2></p>
+<ul>
+<li><p>Here is the arxiv link to our paper:</p>
+<ul>
+<li><p>The arxiv PDF link: <a href="https://arxiv.org/pdf/2110.02529.pdf">https://arxiv.org/pdf/2110.02529.pdf</a></p>
+</li>
+<li><p>The arxiv web-page link: <a href="https://arxiv.org/abs/2110.02529">https://arxiv.org/abs/2110.02529</a></p>
+</li>
+</ul>
+</li>
+<li><p>Here is the open-review link to our paper:</p>
+<ul>
+<li><p>The open-review PDF link: <a href="https://openreview.net/pdf?id&#61;DNRADop4ksB">https://openreview.net/pdf?id&#61;DNRADop4ksB</a></p>
+</li>
+<li><p>The open-review forum link: <a href="https://openreview.net/forum?id&#61;DNRADop4ksB">https://openreview.net/forum?id&#61;DNRADop4ksB</a></p>
+</li>
+</ul>
+</li>
+<li><p>Our paper got a spotlight presentation at ICLR 2022.</p>
+<ul>
+<li><p>We will update here with links to the presentation video and the web-page on <code>iclr.cc</code>.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Here is the bibtex citation entry for our work:</p>
+<pre><code class="julia hljs"><span class="hljs-meta">@inproceedings</span>{ghaffari2022fslfirth,
+    title={On the Importance of Firth Bias Reduction In Few-Shot Classification},
+    author={Saba Ghaffari and Ehsan Saleh and David Forsyth and Yu-Xiong Wang},
+    booktitle={International Conference on Learning Representations},
+    year={<span class="hljs-number">2022</span>},
+    url={https://openreview.net/forum?id=DNRADop4ksB}
+}</code></pre>
+<p>      </div>
+    </div>
+  </div>
+</section>
+<footer class="py-5 bg-dark">
+  <div class="container">
+    <p class="m-0 text-center text-white">&copy; Ehsan Saleh, Saba Ghaffari, David Forsyth, and Yu-Xiong Wang. </p>
+  </div>
+</footer>
+</div><!-- CONTENT ENDS HERE -->
+  
+      
+
+
+
+  
+  
+      
+
+
+  
+  <script src="/firthfsl/libs/simple-scrollspy.min.js"></script>
+  <script>
+  window.onload = function () {
+    scrollSpy('#navbarResponsive', {
+      sectionClass: '.scrollspy',
+      menuActiveTarget: '.nav-link',
+      offset: 100
+    })
+  }
+  </script>
+  </body>
+</html>
