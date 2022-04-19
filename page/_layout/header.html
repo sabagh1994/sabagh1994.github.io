@@ -1,0 +1,56 @@
+<header class="text-white text-center">
+  {{if use_hero}}
+    <div class="jumbotron container bg-primary">
+  {{else}}
+    <div class="jumbotron jumbotron-fluid container-fluid bg-primary">
+  {{end}}
+    <h1>{{title}}</h1>
+    <div class="lead">{{description}}</div>
+    <div class="iclr_spotlight">ICLR 2022 Spotlight</div>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-2"><a href="https://ehsansaleh.github.io/" target="_blank" class="firth_authors">Ehsan Saleh*</a></div>
+        <div class="col-2"><a href="https://sabagh1994.github.io/" target="_blank" class="firth_authors">Saba Ghaffari*</a></div>
+        <div class="col-2"><a href="http://luthuli.cs.uiuc.edu/~daf/" target="_blank" class="firth_authors">David A. Forsyth</a></div>
+        <div class="col-2"><a href="https://yxw.web.illinois.edu" target="_blank" class="firth_authors">Yu-Xiong Wang</a></div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-4 firth_affiliation">Thomas M. Siebel Center for Computer Science</div>
+        <div class="col-4 firth_affiliation">National Center for Super-computing Applications</div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-4 firth_affiliation">University of Illinois Urbana-Champaign</div>
+        <div class="col-4 firth_affiliation">University of Illinois Urbana-Champaign</div>
+      </div>
+
+      <div class="row">
+        <div class="col firth_equal">* Denotes Equal Contribution</div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-1"> <a href="https://arxiv.org/abs/2110.02529" target="_blank"> <img src="/assets/paper_icon.png" class="firth_icons"> </a> </div>
+      <div class="col-1"> <a href="https://github.com/{{github_repo}}" target="_blank"> <img src="/assets/github_icon3.png" class="firth_icons"> </a> </div>
+      <div class="col-1"> <a href={{idb_url}} target="_blank"> <img src="/assets/data_icon2.png" class="firth_icons"> </a> </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-1 firth_icon_description">Paper</div>
+      <div class="col-1 firth_icon_description"> <\Code> </div>
+      <div class="col-1 firth_icon_description">Data</div>
+    </div>
+
+
+
+
+
+    {{if add_github_view}}
+      <a class="github-button" href="https://github.com/{{github_repo}}" data-size="large" aria-label="View {{title}} on GitHub">View on GitHub</a>
+    {{end}}
+    {{if add_github_star}}
+      <a class="github-button" href="https://github.com/{{github_repo}}" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star {{title}} on GitHub">Star</a>
+    {{end}}
+  </div>
+</header>
