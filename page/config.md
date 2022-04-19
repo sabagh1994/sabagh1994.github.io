@@ -91,7 +91,7 @@ The latter allows you to plug in values that you would have defined here.
 @def code_firth_repo  = "ehsansaleh/code_firth"
 @def code_s2m2rf_repo = "ehsansaleh/code_s2m2rf"
 @def code_dcf_repo    = "sabagh1994/code_dcf"
-@def idb_url          = "https://databank.illinois.edu/datasets/IDB-1016367?code=UfxmYNvnxRZQmPzXNiM4--tCfFeEHm-msxZWihwKmHs"
+@def idb_url          = "https://doi.org/10.13012/B2IDB-1016367_V1"
 
 <!-- SECTION LAYOUT
 NOTE:
